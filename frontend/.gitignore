@@ -40,8 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# 🚨 核心防污染：屏蔽本地向量数据库和 Python 缓存文件（不要传上网）
 backend/chroma_db/
-
-package-lock.json
-
-package.json
+__pycache__/
+*.pyc
