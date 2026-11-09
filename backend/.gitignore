@@ -1,0 +1,8 @@
+doc_registry.json
+user_feedback.json
+chroma_db/
+.env
+__pycache__/
+*.pyc
+venv/
+.venv/
