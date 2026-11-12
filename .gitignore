@@ -185,3 +185,7 @@ node_modules/
 out/
 build/
 *.sqlite3
+
+# 忽略测试用的 PDF 文件
+pdf/
+*.pdf

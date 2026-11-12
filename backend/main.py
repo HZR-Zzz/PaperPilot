@@ -40,13 +40,21 @@ matplotlib.use('Agg')
 load_dotenv()
 
 app = FastAPI()
+
+# ===== 部署兼容：CORS 支持环境变量覆盖，兜底使用 CONFIG =====
+_cors_env = os.getenv("CORS_ORIGINS", "")
+_cors_origins = [o.strip() for o in _cors_env.split(",") if o.strip()]
+if not _cors_origins:
+    _cors_origins = CONFIG.get("cors_origins", ["http://localhost:3000", "http://127.0.0.1:3000"])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=CONFIG["cors_origins"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# ===== 部署兼容改动结束 =====
 
 client = OpenAI(api_key=os.getenv("API_KEY"), base_url=os.getenv("BASE_URL"))
 chroma_client = chromadb.PersistentClient(path=CONFIG["chroma_path"])
@@ -993,7 +1001,8 @@ def arxiv_download(background_tasks: BackgroundTasks, arxiv_url: str = Form(...)
         resp = None
         for attempt in range(3):
             try:
-                resp = requests.get(pdf_url, headers=headers, timeout=90, stream=True, verify=False)
+                # ===== 部署兼容：去掉 verify=False，恢复默认 SSL 校验 =====
+                resp = requests.get(pdf_url, headers=headers, timeout=90, stream=True)
                 if resp.status_code == 200:
                     break
             except requests.exceptions.RequestException as e:
