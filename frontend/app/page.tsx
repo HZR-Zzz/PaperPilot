@@ -746,7 +746,7 @@ export default function Home() {
     const matches = output.match(re) || [];
     let cleanOutput = output;
     if (matches.length > 1) {
-      const marker = matches[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const marker = matches[0]?.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       cleanOutput = output.replace(new RegExp(`(${marker})\\s*(?=${marker})`, "g"), "");
     }
     const mathRegex = /(\$\$[\s\S]+?\$\$|\$[^\$\n]+?\$|\\\[[\s\S]+?\\\]|\\\([\s\S]+?\\\))/g;
