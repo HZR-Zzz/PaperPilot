@@ -128,7 +128,8 @@ export default function Home() {
       const data = await res.json();
 
       if (data.status === "all_failed") {
-        setDbMessage("全部上传失败，请检查日志。");
+        const errorMsgs = data.results?.map((r: any) => r.message).join("；");
+        setDbMessage(errorMsgs || "全部上传失败，请检查日志。");
         return;
       }
 
@@ -740,7 +741,7 @@ export default function Home() {
   };
 
   const renderOutput = () => {
-    if (!output) return "AI 回复将在这里显示...";
+    if (!output) return "💡 请输入指令，或点击左侧功能按钮开始探索...";
     let re: RegExp;
     try { re = new RegExp(pageMarkerPattern, "g"); } catch { re = /\[Page \d+\]/g; }
     const matches = output.match(re) || [];
@@ -870,7 +871,7 @@ export default function Home() {
                   style={{
                     color: "#fff", backgroundColor: "#3b82f6", padding: "2px 8px",
                     borderRadius: "6px", margin: "0 4px", fontWeight: "bold",
-                    cursor: "pointer"
+                    cursor: "pointer", display: "inline-block", transition: "all 0.2s", boxShadow: "0 2px 4px rgba(59, 130, 246, 0.3)"
                   }}
                   title={`点击跳转到第 ${pageNum} 页`}
                 >
@@ -1071,34 +1072,54 @@ export default function Home() {
   }, []);
 
   const styles: Record<string, React.CSSProperties> = {
-    container: { minHeight: "100vh", backgroundColor: "#0f172a", color: "#f1f5f9", padding: "1rem", fontFamily: "sans-serif" },
-    header: { fontSize: "1.5rem", fontWeight: "bold", textAlign: "center", color: "#60a5fa", marginBottom: "1rem" },
+    container: { minHeight: "100vh", background: "radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 60%)", color: "#f1f5f9", padding: "1rem", fontFamily: "system-ui, -apple-system, sans-serif" },
+    header: { fontSize: "1.6rem", fontWeight: "bold", textAlign: "center", color: "#60a5fa", marginBottom: "1rem", letterSpacing: "1px", textShadow: "0 0 20px rgba(96, 165, 250, 0.4)" },
     grid: { display: "grid", gridTemplateColumns: "380px 1fr 1fr", gap: "1rem", height: "calc(100vh - 80px)" },
-    sidebar: { backgroundColor: "#1e293b", padding: "1rem", borderRadius: "0.75rem", display: "flex", flexDirection: "column", gap: "1rem", overflowY: "auto" },
-    card: { backgroundColor: "#1e293b", padding: "1rem", borderRadius: "0.75rem", border: "1px solid #334155", display: "flex", flexDirection: "column", overflow: "hidden" },
-    readerBox: { flex: 1, overflowY: "auto", backgroundColor: "#0f172a", padding: "1rem", borderRadius: "0.5rem", whiteSpace: "pre-wrap", fontSize: "0.9rem", lineHeight: "1.6", fontFamily: "Georgia, serif" },
-    inputBox: { flex: 1, backgroundColor: "#334155", border: "1px solid #475569", padding: "0.5rem", borderRadius: "0.5rem", color: "white", outline: "none" },
-    btnBlue: { backgroundColor: "#2563eb", color: "white", padding: "0.5rem 1rem", borderRadius: "0.5rem", fontWeight: "bold", border: "none", cursor: "pointer" },
-    btnGreen: { backgroundColor: "#16a34a", color: "white", padding: "0.5rem 1rem", borderRadius: "0.5rem", fontWeight: "bold", border: "none", cursor: "pointer" },
-    btnPurple: { backgroundColor: "#9333ea", color: "white", padding: "0.5rem 1rem", borderRadius: "0.5rem", fontWeight: "bold", border: "none", cursor: "pointer" },
-    popup: { position: "absolute", top: popupPos.y, left: popupPos.x, backgroundColor: "#1e293b", border: "1px solid #3b82f6", borderRadius: "0.5rem", padding: "0.75rem", zIndex: 1000, boxShadow: "0 8px 24px rgba(0,0,0,0.6)", display: "flex", flexDirection: "column", gap: "0.5rem", width: `${UI.POPUP_WIDTH}px` },
-    resultBox: { backgroundColor: "#0f172a", padding: "0.5rem", borderRadius: "0.5rem", color: "#4ade80", fontFamily: "monospace", border: "1px solid #166534", marginTop: "0.5rem", fontSize: "0.8rem", whiteSpace: "pre-wrap" },
+    sidebar: { backgroundColor: "rgba(30, 41, 59, 0.7)", backdropFilter: "blur(12px)", padding: "1rem", borderRadius: "1rem", display: "flex", flexDirection: "column", gap: "1rem", overflowY: "auto", border: "1px solid rgba(71, 85, 105, 0.5)", boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)" },
+    card: { backgroundColor: "rgba(30, 41, 59, 0.7)", backdropFilter: "blur(12px)", padding: "1rem", borderRadius: "1rem", border: "1px solid rgba(71, 85, 105, 0.5)", display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)" },
+    readerBox: { flex: 1, overflowY: "auto", backgroundColor: "#0b1120", padding: "1.2rem", borderRadius: "0.75rem", whiteSpace: "pre-wrap", fontSize: "0.95rem", lineHeight: "1.7", fontFamily: "Georgia, serif", border: "1px solid #1e293b", boxShadow: "inset 0 2px 10px rgba(0,0,0,0.5)" },
+    inputBox: { flex: 1, backgroundColor: "rgba(15, 23, 42, 0.6)", border: "1px solid #475569", padding: "0.5rem 0.8rem", borderRadius: "0.5rem", color: "white", outline: "none", transition: "all 0.2s" },
+    btnBlue: { backgroundColor: "#3b82f6", color: "white", padding: "0.5rem 1rem", borderRadius: "0.5rem", fontWeight: "bold", border: "none", cursor: "pointer", boxShadow: "0 2px 8px rgba(59, 130, 246, 0.4)" },
+    btnGreen: { backgroundColor: "#10b981", color: "white", padding: "0.5rem 1rem", borderRadius: "0.5rem", fontWeight: "bold", border: "none", cursor: "pointer", boxShadow: "0 2px 8px rgba(16, 185, 129, 0.4)" },
+    btnPurple: { backgroundColor: "#8b5cf6", color: "white", padding: "0.5rem 1rem", borderRadius: "0.5rem", fontWeight: "bold", border: "none", cursor: "pointer", boxShadow: "0 2px 8px rgba(139, 92, 246, 0.4)" },
+    popup: { position: "absolute", top: popupPos.y, left: popupPos.x, backgroundColor: "rgba(30, 41, 59, 0.95)", backdropFilter: "blur(16px)", border: "1px solid #3b82f6", borderRadius: "0.75rem", padding: "0.75rem", zIndex: 1000, boxShadow: "0 12px 40px rgba(0,0,0,0.8)", display: "flex", flexDirection: "column", gap: "0.5rem", width: `${UI.POPUP_WIDTH}px` },
+    resultBox: { backgroundColor: "rgba(2, 6, 23, 0.5)", padding: "0.6rem", borderRadius: "0.5rem", color: "#34d399", fontFamily: "monospace", border: "1px solid #059669", marginTop: "0.5rem", fontSize: "0.8rem", whiteSpace: "pre-wrap" },
   };
 
   return (
     <div style={styles.container}>
+      <style>{`
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
+        ::-webkit-scrollbar-thumb:hover { background-color: #475569; }
+        ::selection { background-color: rgba(59, 130, 246, 0.4); color: #ffffff; }
+        
+        /* 全局按钮微交互 */
+        button { transition: all 0.2s ease-in-out !important; }
+        button:hover:not(:disabled) { filter: brightness(1.15); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        button:active:not(:disabled) { transform: translateY(1px); filter: brightness(0.9); }
+        
+        /* 输入框聚焦发光 */
+        input:focus, textarea:focus, select:focus { border-color: #60a5fa !important; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2) !important; outline: none !important; }
+        
+        /* 链接和可点击元素微交互 */
+        a { transition: all 0.2s; }
+        a:hover { filter: brightness(1.2); }
+      `}</style>
+
       <h1 style={styles.header}>PaperPilot 沉浸式科研阅读器</h1>
       <div style={styles.grid}>
         <div style={styles.sidebar}>
           {tocList.length > 0 && (
             <div style={{ borderBottom: "1px solid #334155", paddingBottom: "1rem" }}>
-              <h3 style={{ marginBottom: "0.5rem", color: "#60a5fa" }}>
+              <h3 style={{ marginBottom: "0.5rem", color: "#60a5fa", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 📑 章节导航
-                <span style={{ fontSize: "0.65rem", color: "#94a3b8", fontWeight: "normal" }}>
-                  {" "}({tocList.length} 节)
+                <span style={{ fontSize: "0.65rem", color: "#94a3b8", fontWeight: "normal", backgroundColor: "#1e293b", padding: "2px 6px", borderRadius: "4px" }}>
+                  {tocList.length} 节
                 </span>
               </h3>
-              <div style={{ maxHeight: "200px", overflowY: "auto", backgroundColor: "#0f172a", borderRadius: "0.4rem", padding: "0.4rem" }}>
+              <div style={{ maxHeight: "200px", overflowY: "auto", backgroundColor: "rgba(15, 23, 42, 0.6)", borderRadius: "0.5rem", padding: "0.4rem", border: "1px solid #1e293b" }}>
                 {tocList.slice(0, 60).map((t, i) => {
                   const isL1 = t.level === 1;
                   const isL2 = t.level === 2;
@@ -1123,18 +1144,19 @@ export default function Home() {
                         }
                       }}
                       style={{
-                        paddingLeft: isL1 ? "0" : isL2 ? "1rem" : "2rem",
-                        padding: "0.2rem 0.4rem",
-                        fontSize: isL1 ? "0.78rem" : "0.72rem",
+                        paddingLeft: isL1 ? "0.4rem" : isL2 ? "1.2rem" : "2.2rem",
+                        padding: "0.3rem 0.4rem",
+                        fontSize: isL1 ? "0.8rem" : "0.75rem",
                         fontWeight: isL1 ? "bold" : "normal",
                         color: isL1 ? "#93c5fd" : isL2 ? "#cbd5e1" : "#94a3b8",
                         cursor: "pointer",
-                        borderRadius: "0.2rem",
-                        borderLeft: isL1 ? "2px solid #3b82f6" : "none",
+                        borderRadius: "0.3rem",
+                        borderLeft: isL1 ? "3px solid #3b82f6" : "none",
                         marginBottom: "0.1rem",
+                        transition: "all 0.2s"
                       }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "#1e293b"; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = ""; }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(51, 65, 85, 0.8)"; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; }}
                     >
                       {isL1 ? "▪ " : isL2 ? "▫ " : "· "}
                       {t.title}
@@ -1166,22 +1188,25 @@ export default function Home() {
                 }}
                 style={{
                   display: "flex", justifyContent: "space-between", alignItems: "center",
-                  padding: "0.5rem",
-                  backgroundColor: activeDoc === doc.name ? "#1e3a8a" : "#334155",
-                  borderRadius: "0.25rem", marginBottom: "0.5rem", cursor: "pointer",
-                  fontSize: "0.8rem", transition: "background-color 0.2s",
+                  padding: "0.6rem 0.8rem",
+                  backgroundColor: activeDoc === doc.name ? "rgba(37, 99, 235, 0.2)" : "rgba(15, 23, 42, 0.6)",
+                  border: activeDoc === doc.name ? "1px solid #3b82f6" : "1px solid transparent",
+                  borderRadius: "0.5rem", marginBottom: "0.4rem", cursor: "pointer",
+                  fontSize: "0.8rem", transition: "all 0.2s",
                 }}
+                onMouseEnter={(e) => { if (activeDoc !== doc.name) (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(51, 65, 85, 0.6)"; }}
+                onMouseLeave={(e) => { if (activeDoc !== doc.name) (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(15, 23, 42, 0.6)"; }}
               >
                 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
                   {doc.name}
-                  {activeDoc === doc.name && <span style={{ color: "#60a5fa", fontSize: "0.7rem" }}> (当前)</span>}
+                  {activeDoc === doc.name && <span style={{ color: "#60a5fa", fontSize: "0.7rem", marginLeft: "0.3rem" }}> (当前)</span>}
                   {selectedDocs.includes(doc.name) && selectedDocs.length > 1 && (
-                    <span style={{ color: "#4ade80", fontSize: "0.7rem" }}> ✓对比</span>
+                    <span style={{ color: "#4ade80", fontSize: "0.7rem", marginLeft: "0.3rem" }}> ✓对比</span>
                   )}
                 </span>
                 <button
                   onClick={(e) => handleDeleteDoc(e, doc.name)}
-                  style={{ backgroundColor: "#dc2626", color: "white", border: "none", borderRadius: "0.25rem", padding: "0.2rem 0.4rem", fontSize: "0.7rem", marginLeft: "0.5rem", cursor: "pointer", flexShrink: 0 }}
+                  style={{ backgroundColor: "rgba(220, 38, 38, 0.8)", color: "white", border: "none", borderRadius: "0.25rem", padding: "0.2rem 0.4rem", fontSize: "0.7rem", marginLeft: "0.5rem", cursor: "pointer", flexShrink: 0 }}
                 >删除</button>
               </div>
             ))}
@@ -1191,7 +1216,7 @@ export default function Home() {
                 const files = Array.from(e.target.files || []);
                 setUploadFiles(files);
               }}
-              style={{ width: "100%", fontSize: "0.8rem", marginTop: "0.5rem" }}
+              style={{ width: "100%", fontSize: "0.8rem", marginTop: "0.5rem", color: "#94a3b8" }}
             />
             {uploadFiles.length > 0 && (
               <div style={{ fontSize: "0.7rem", color: "#94a3b8", marginTop: "0.25rem" }}>
@@ -1210,8 +1235,8 @@ export default function Home() {
 
           <div style={{ borderTop: "1px solid #334155", paddingTop: "1rem" }}>
             <h3 style={{ marginBottom: "0.5rem", color: "#60a5fa" }}>⚖️ 去重与差异</h3>
-            <input type="file" accept=".pdf" onChange={(e) => setDedupFile1(e.target.files?.[0] || null)} style={{ width: "100%", fontSize: "0.8rem", marginBottom: "0.5rem" }} />
-            <input type="file" accept=".pdf" onChange={(e) => setDedupFile2(e.target.files?.[0] || null)} style={{ width: "100%", fontSize: "0.8rem", marginBottom: "0.5rem" }} />
+            <input type="file" accept=".pdf" onChange={(e) => setDedupFile1(e.target.files?.[0] || null)} style={{ width: "100%", fontSize: "0.8rem", marginBottom: "0.5rem", color: "#94a3b8" }} />
+            <input type="file" accept=".pdf" onChange={(e) => setDedupFile2(e.target.files?.[0] || null)} style={{ width: "100%", fontSize: "0.8rem", marginBottom: "0.5rem", color: "#94a3b8" }} />
             <div style={{ display: "flex", gap: "0.5rem" }}>
               <button onClick={() => handleDedup("dedup")} style={{ ...styles.btnBlue, flex: 1, fontSize: "0.8rem" }}>开始检测</button>
               <button onClick={() => handleDedup("diff")} style={{ ...styles.btnPurple, flex: 1, fontSize: "0.8rem" }}>查看差异</button>
@@ -1231,17 +1256,17 @@ export default function Home() {
               <button onClick={handleCompare} style={{ ...styles.btnGreen, flex: 1, fontSize: "0.75rem", minWidth: "100px" }}>
                 多文献对比
               </button>
-              <button onClick={handleFutureWork} style={{ ...styles.btnBlue, flex: 1, fontSize: "0.75rem", minWidth: "100px", backgroundColor: "#f59e0b" }}>
+              <button onClick={handleFutureWork} style={{ ...styles.btnBlue, flex: 1, fontSize: "0.75rem", minWidth: "100px", backgroundColor: "#f59e0b", boxShadow: "0 2px 8px rgba(245, 158, 11, 0.4)" }}>
                 未来方向
               </button>
             </div>
             {graphSummary && (
-              <div style={{ fontSize: "0.65rem", color: "#cbd5e1", marginBottom: "0.3rem", backgroundColor: "#020617", padding: "0.3rem", borderRadius: "0.3rem" }}>
+              <div style={{ fontSize: "0.65rem", color: "#cbd5e1", marginBottom: "0.5rem", backgroundColor: "rgba(2, 6, 23, 0.6)", padding: "0.5rem", borderRadius: "0.5rem", border: "1px solid #334155" }}>
                 📊 {graphSummary.total_papers} 篇本地 · {graphSummary.total_refs} 条引用 · {graphSummary.pillar_count} 篇基石论文
               </div>
             )}
             {graphMessage && <div style={{ fontSize: "0.7rem", color: "#fbbf24", marginBottom: "0.25rem" }}>{graphMessage}</div>}
-            <div style={{ height: "280px", borderRadius: "0.5rem", marginBottom: "0.5rem", border: "1px solid #334155", position: "relative", backgroundColor: "#0f172a", overflow: "hidden" }}>
+            <div style={{ height: "280px", borderRadius: "0.5rem", marginBottom: "0.5rem", border: "1px solid #334155", position: "relative", backgroundColor: "rgba(11, 17, 32, 0.8)", overflow: "hidden" }}>
               <div ref={chartDomRef} style={{ width: "100%", height: "100%", display: graphData.nodes.length > 0 ? "block" : "none" }} />
               {graphData.nodes.length === 0 && (
                 <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.8rem", color: "#64748b" }}>
@@ -1250,18 +1275,18 @@ export default function Home() {
               )}
             </div>
             {reviewText && (
-              <div style={{ maxHeight: "100px", overflowY: "auto", backgroundColor: "#0f172a", padding: "0.5rem", fontSize: "0.8rem", color: "#d1d5db", borderRadius: "0.5rem", whiteSpace: "pre-wrap" }}>
+              <div style={{ maxHeight: "150px", overflowY: "auto", backgroundColor: "rgba(15, 23, 42, 0.8)", padding: "0.6rem", fontSize: "0.8rem", color: "#d1d5db", borderRadius: "0.5rem", whiteSpace: "pre-wrap", border: "1px solid #334155" }}>
                 {reviewText}
               </div>
             )}
             {compareResult && (
-              <div style={{ maxHeight: "180px", overflowY: "auto", backgroundColor: "#020617", padding: "0.5rem", fontSize: "0.72rem", color: "#d1d5db", borderRadius: "0.5rem", whiteSpace: "pre-wrap", marginTop: "0.4rem", border: "1px solid #16a34a" }}>
+              <div style={{ maxHeight: "180px", overflowY: "auto", backgroundColor: "rgba(2, 6, 23, 0.8)", padding: "0.6rem", fontSize: "0.75rem", color: "#d1d5db", borderRadius: "0.5rem", whiteSpace: "pre-wrap", marginTop: "0.5rem", border: "1px solid #16a34a" }}>
                 <div style={{ color: "#4ade80", fontWeight: "bold", marginBottom: "0.2rem" }}>⚖️ 多文献对比</div>
                 {compareResult}
               </div>
             )}
             {futureWork && (
-              <div style={{ maxHeight: "180px", overflowY: "auto", backgroundColor: "#020617", padding: "0.5rem", fontSize: "0.72rem", color: "#d1d5db", borderRadius: "0.5rem", whiteSpace: "pre-wrap", marginTop: "0.4rem", border: "1px solid #f59e0b" }}>
+              <div style={{ maxHeight: "180px", overflowY: "auto", backgroundColor: "rgba(2, 6, 23, 0.8)", padding: "0.6rem", fontSize: "0.75rem", color: "#d1d5db", borderRadius: "0.5rem", whiteSpace: "pre-wrap", marginTop: "0.5rem", border: "1px solid #f59e0b" }}>
                 <div style={{ color: "#fbbf24", fontWeight: "bold", marginBottom: "0.2rem" }}>🌱 未来方向（已过滤旧 idea）</div>
                 {futureWork}
               </div>
@@ -1271,19 +1296,19 @@ export default function Home() {
           <div style={{ flex: 1, display: "flex", flexDirection: "column", borderTop: "1px solid #334155", paddingTop: "1rem" }}>
             <h3 style={{ marginBottom: "0.5rem", color: "#60a5fa" }}>🤖 RAG 问答</h3>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.4rem" }}>
-              <label style={{ fontSize: "0.75rem", color: "#cbd5e1", display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                <input type="checkbox" checked={agentMode} onChange={(e) => setAgentMode(e.target.checked)} />
+              <label style={{ fontSize: "0.75rem", color: "#cbd5e1", display: "flex", alignItems: "center", gap: "0.3rem", cursor: "pointer" }}>
+                <input type="checkbox" checked={agentMode} onChange={(e) => setAgentMode(e.target.checked)} style={{ cursor: "pointer" }} />
                 Agent 智能路由
               </label>
             </div>
-            <div style={{ flex: 1, backgroundColor: "#0f172a", borderRadius: "0.5rem", padding: "0.5rem", fontSize: "0.8rem", overflowY: "auto", marginBottom: "0.5rem", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
+            <div style={{ flex: 1, backgroundColor: "rgba(11, 17, 32, 0.8)", borderRadius: "0.5rem", padding: "0.8rem", fontSize: "0.85rem", overflowY: "auto", marginBottom: "0.5rem", whiteSpace: "pre-wrap", wordBreak: "break-all", border: "1px solid #1e293b", boxShadow: "inset 0 2px 10px rgba(0,0,0,0.5)" }}>
               {renderOutput()}
             </div>
             {agentSteps.length > 0 && (
-              <div style={{ marginBottom: "0.4rem", maxHeight: "150px", overflowY: "auto", backgroundColor: "#020617", padding: "0.4rem", borderRadius: "0.4rem", fontSize: "0.7rem" }}>
-                <div style={{ color: "#fbbf24", marginBottom: "0.2rem" }}>🧠 Agent 思考链</div>
+              <div style={{ marginBottom: "0.4rem", maxHeight: "150px", overflowY: "auto", backgroundColor: "rgba(2, 6, 23, 0.8)", padding: "0.6rem", borderRadius: "0.5rem", fontSize: "0.75rem", border: "1px solid #334155" }}>
+                <div style={{ color: "#fbbf24", marginBottom: "0.3rem", fontWeight: "bold" }}>🧠 Agent 思考链</div>
                 {agentSteps.map((s, i) => (
-                  <div key={i} style={{ color: "#94a3b8", marginBottom: "0.15rem" }}>
+                  <div key={i} style={{ color: "#94a3b8", marginBottom: "0.2rem", lineHeight: 1.5 }}>
                     {s.type === "tool_call" && `🔧 调用 ${s.tool}(${JSON.stringify(s.args).slice(0, UI.AGENT_ARGS_PREVIEW_LEN)}...)`}
                     {s.type === "tool_result" && `📦 ${s.tool} 结果：${String(s.result_preview || "").slice(0, UI.AGENT_RESULT_PREVIEW_LEN)}...`}
                     {s.type === "thought" && `💭 ${s.content}`}
@@ -1294,9 +1319,9 @@ export default function Home() {
             <div style={{ display: "flex", gap: "0.5rem" }}>
               <input
                 style={styles.inputBox} value={input} onChange={(e) => setInput(e.target.value)}
-                placeholder="提问..." onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                placeholder="输入关于文献的提问..." onKeyDown={(e) => e.key === "Enter" && handleSend()}
               />
-              <button onClick={handleSend} style={styles.btnBlue}>{loading ? "..." : "发"}</button>
+              <button onClick={handleSend} style={styles.btnBlue}>{loading ? "..." : "发送"}</button>
             </div>
           </div>
 
@@ -1331,55 +1356,55 @@ export default function Home() {
               </div>
             )}
             {arxivPapers.length > 0 && (
-              <div style={{ marginTop: "0.5rem", maxHeight: "400px", overflowY: "auto", backgroundColor: "#0f172a", padding: "0.5rem", borderRadius: "0.5rem" }}>
+              <div style={{ marginTop: "0.5rem", maxHeight: "400px", overflowY: "auto", backgroundColor: "rgba(15, 23, 42, 0.6)", padding: "0.6rem", borderRadius: "0.5rem", border: "1px solid #1e293b" }}>
                 {arxivPapers.map((p, i) => {
                   const key = p.arxiv_url || p.title;
                   const fb = arxivFeedback[key] || { like: 0, dislike: 0 };
                   return (
-                    <div key={i} style={{ marginBottom: "0.6rem", borderBottom: "1px dashed #334155", paddingBottom: "0.4rem" }}>
-                      <div style={{ color: "#60a5fa", fontWeight: "bold", fontSize: "0.78rem", lineHeight: 1.3 }}>{p.title}</div>
-                      <div style={{ color: "#94a3b8", fontSize: "0.68rem", marginTop: "0.15rem" }}>
+                    <div key={i} style={{ marginBottom: "0.8rem", borderBottom: "1px dashed #334155", paddingBottom: "0.6rem" }}>
+                      <div style={{ color: "#60a5fa", fontWeight: "bold", fontSize: "0.8rem", lineHeight: 1.4 }}>{p.title}</div>
+                      <div style={{ color: "#94a3b8", fontSize: "0.7rem", marginTop: "0.2rem" }}>
                         {p.authors} | {p.published}
                         {p.source === "mock_offline" && <span style={{ color: "#fbbf24" }}> | 离线兜底</span>}
                       </div>
-                      <div style={{ display: "flex", gap: "0.4rem", marginTop: "0.25rem", flexWrap: "wrap" }}>
+                      <div style={{ display: "flex", gap: "0.4rem", marginTop: "0.4rem", flexWrap: "wrap" }}>
                         {p.github_url ? (
-                          <a href={p.github_url} target="_blank" rel="noreferrer" style={{ fontSize: "0.65rem", color: "#0f172a", backgroundColor: "#4ade80", padding: "1px 6px", borderRadius: "4px", fontWeight: "bold", textDecoration: "none" }}>
+                          <a href={p.github_url} target="_blank" rel="noreferrer" style={{ fontSize: "0.65rem", color: "#0f172a", backgroundColor: "#4ade80", padding: "2px 8px", borderRadius: "4px", fontWeight: "bold", textDecoration: "none" }}>
                             ✓ GitHub
                           </a>
                         ) : (
-                          <span style={{ fontSize: "0.65rem", color: "#64748b", border: "1px solid #334155", padding: "1px 6px", borderRadius: "4px" }}>
+                          <span style={{ fontSize: "0.65rem", color: "#64748b", border: "1px solid #334155", padding: "2px 8px", borderRadius: "4px" }}>
                             无代码
                           </span>
                         )}
                         {p.local_relevance > 0 && (
-                          <span style={{ fontSize: "0.65rem", color: "#f1f5f9", backgroundColor: "#2563eb", padding: "1px 6px", borderRadius: "4px" }}>
+                          <span style={{ fontSize: "0.65rem", color: "#f1f5f9", backgroundColor: "#3b82f6", padding: "2px 8px", borderRadius: "4px" }}>
                             本地相关 {p.local_relevance} 分
                           </span>
                         )}
                       </div>
-                      <div style={{ fontSize: "0.68rem", color: "#cbd5e1", marginTop: "0.25rem", fontStyle: "italic" }}>
+                      <div style={{ fontSize: "0.7rem", color: "#cbd5e1", marginTop: "0.4rem", fontStyle: "italic" }}>
                         💡 {p.recommend_reason}
                       </div>
-                      <div style={{ fontSize: "0.65rem", color: "#64748b", marginTop: "0.2rem", maxHeight: "2.4em", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      <div style={{ fontSize: "0.68rem", color: "#64748b", marginTop: "0.3rem", maxHeight: "2.8em", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {p.summary}
                       </div>
-                      <div style={{ display: "flex", gap: "0.4rem", marginTop: "0.3rem", flexWrap: "wrap" }}>
+                      <div style={{ display: "flex", gap: "0.4rem", marginTop: "0.4rem", flexWrap: "wrap" }}>
                         <button
                           onClick={() => handleArxivFeedback(p, "like")}
-                          style={{ fontSize: "0.65rem", padding: "2px 6px", backgroundColor: "#16a34a", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+                          style={{ fontSize: "0.65rem", padding: "2px 8px", backgroundColor: "#10b981", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
                         >👍 {fb.like}</button>
                         <button
                           onClick={() => handleArxivFeedback(p, "dislike")}
-                          style={{ fontSize: "0.65rem", padding: "2px 6px", backgroundColor: "#dc2626", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+                          style={{ fontSize: "0.65rem", padding: "2px 8px", backgroundColor: "#ef4444", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
                         >👎 {fb.dislike}</button>
                         <button
                           disabled={arxivDownloading === key}
                           onClick={() => handleArxivDownload(p)}
-                          style={{ fontSize: "0.65rem", padding: "2px 6px", backgroundColor: "#9333ea", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", opacity: arxivDownloading === key ? 0.5 : 1 }}
+                          style={{ fontSize: "0.65rem", padding: "2px 8px", backgroundColor: "#8b5cf6", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", opacity: arxivDownloading === key ? 0.5 : 1 }}
                         >{arxivDownloading === key ? "下载中..." : "⬇ 下载入库"}</button>
                         {p.arxiv_url && (
-                          <a href={p.arxiv_url} target="_blank" rel="noreferrer" style={{ fontSize: "0.65rem", padding: "2px 6px", backgroundColor: "#334155", color: "#cbd5e1", border: "none", borderRadius: "4px", textDecoration: "none" }}>
+                          <a href={p.arxiv_url} target="_blank" rel="noreferrer" style={{ fontSize: "0.65rem", padding: "2px 8px", backgroundColor: "#334155", color: "#cbd5e1", border: "none", borderRadius: "4px", textDecoration: "none" }}>
                             arXiv 原文
                           </a>
                         )}
@@ -1397,7 +1422,7 @@ export default function Home() {
               <label style={{ fontSize: "0.8rem", color: "#cbd5e1", display: "block", marginBottom: "0.25rem" }}>上传 CSV 生成图表:</label>
               <select
                 value={chartType} onChange={(e) => setChartType(e.target.value)}
-                style={{ ...styles.inputBox, width: "100%", marginBottom: "0.25rem", fontSize: "0.75rem" }}
+                style={{ ...styles.inputBox, width: "100%", marginBottom: "0.4rem", fontSize: "0.75rem" }}
               >
                 <option value="auto">自动推荐</option>
                 <option value="table">表格</option>
@@ -1406,30 +1431,30 @@ export default function Home() {
                 <option value="radar">雷达图</option>
                 <option value="radar3d">3D 雷达图</option>
               </select>
-              <input type="file" accept=".csv" onChange={handleCsvUpload} style={{ width: "100%", fontSize: "0.75rem", color: "#cbd5e1" }} />
+              <input type="file" accept=".csv" onChange={handleCsvUpload} style={{ width: "100%", fontSize: "0.75rem", color: "#94a3b8" }} />
             </div>
             {isGeneratingChart && <div style={{ fontSize: "0.75rem", color: "#4ade80" }}>图表生成中...</div>}
             {csvChart && (
-              <div style={{ backgroundColor: "#0f172a", padding: "0.5rem", borderRadius: "0.5rem", marginBottom: "0.5rem" }}>
-                <div style={{ fontSize: "0.7rem", color: "#60a5fa", marginBottom: "0.25rem" }}>图表类型：{csvChart.chartType}</div>
-                {csvChart.image && <img src={`data:image/png;base64,${csvChart.image}`} alt="Chart" style={{ width: "100%", borderRadius: "0.25rem", marginBottom: "0.25rem" }} />}
+              <div style={{ backgroundColor: "rgba(15, 23, 42, 0.8)", padding: "0.6rem", borderRadius: "0.5rem", marginBottom: "0.5rem", border: "1px solid #334155" }}>
+                <div style={{ fontSize: "0.75rem", color: "#60a5fa", marginBottom: "0.4rem", fontWeight: "bold" }}>图表类型：{csvChart.chartType}</div>
+                {csvChart.image && <img src={`data:image/png;base64,${csvChart.image}`} alt="Chart" style={{ width: "100%", borderRadius: "0.4rem", marginBottom: "0.4rem", boxShadow: "0 4px 12px rgba(0,0,0,0.5)" }} />}
                 {csvChart.table && (
-                  <pre style={{ maxHeight: "120px", overflow: "auto", fontSize: "0.65rem", color: "#cbd5e1", backgroundColor: "#020617", padding: "0.25rem", borderRadius: "0.25rem" }}>
+                  <pre style={{ maxHeight: "120px", overflow: "auto", fontSize: "0.65rem", color: "#cbd5e1", backgroundColor: "rgba(2, 6, 23, 0.8)", padding: "0.4rem", borderRadius: "0.4rem", border: "1px solid #1e293b" }}>
                     {csvChart.table}
                   </pre>
                 )}
-                <div style={{ fontSize: "0.7rem", color: "#cbd5e1", fontStyle: "italic", whiteSpace: "pre-wrap" }}>
+                <div style={{ fontSize: "0.75rem", color: "#cbd5e1", fontStyle: "italic", whiteSpace: "pre-wrap", marginTop: "0.4rem" }}>
                   {csvChart.caption}
                 </div>
               </div>
             )}
 
-            <div style={{ marginTop: "0.5rem" }}>
+            <div style={{ marginTop: "0.8rem" }}>
               <label style={{ fontSize: "0.8rem", color: "#cbd5e1", display: "block", marginBottom: "0.25rem" }}>输入 Idea 生成论文框架:</label>
               <textarea
                 value={paperIdea} onChange={(e) => setPaperIdea(e.target.value)}
                 placeholder="例如: 用多模态大模型结合 RAG 预测蛋白质结构..."
-                style={{ ...styles.inputBox, width: "100%", height: "50px", marginBottom: "0.25rem", fontSize: "0.75rem", resize: "none" }}
+                style={{ ...styles.inputBox, width: "100%", height: "60px", marginBottom: "0.4rem", fontSize: "0.75rem", resize: "none" }}
               />
               <button
                 onClick={handleGenerateFramework}
@@ -1440,20 +1465,20 @@ export default function Home() {
               </button>
 
               {paperFramework && (
-                <div style={{ marginTop: "0.5rem", maxHeight: "500px", overflowY: "auto", backgroundColor: "#0f172a", padding: "0.75rem", borderRadius: "0.5rem", fontSize: "0.8rem", color: "#d1d5db", whiteSpace: "pre-wrap", border: "1px solid #334155" }}>
+                <div style={{ marginTop: "0.5rem", maxHeight: "500px", overflowY: "auto", backgroundColor: "rgba(11, 17, 32, 0.8)", padding: "0.8rem", borderRadius: "0.5rem", fontSize: "0.8rem", color: "#d1d5db", whiteSpace: "pre-wrap", border: "1px solid #334155" }}>
                   {paperFramework}
                 </div>
               )}
               
               {frameworkError && (
-                <div style={{ marginTop: "0.5rem", padding: "0.5rem", backgroundColor: "#450a0a", color: "#fca5a5", borderRadius: "0.5rem", fontSize: "0.75rem", border: "1px solid #991b1b" }}>
+                <div style={{ marginTop: "0.5rem", padding: "0.6rem", backgroundColor: "rgba(69, 10, 10, 0.8)", color: "#fca5a5", borderRadius: "0.5rem", fontSize: "0.75rem", border: "1px solid #991b1b" }}>
                   ⚠️ {frameworkError}
                 </div>
               )}
 
               {frameworkMermaid && (
-                <div style={{ marginTop: "0.5rem", backgroundColor: "#0f172a", padding: "0.5rem", borderRadius: "0.5rem", overflow: "auto", border: "1px solid #334155" }}>
-                  <div style={{ fontSize: "0.75rem", color: "#60a5fa", marginBottom: "0.25rem" }}>Mermaid 架构图</div>
+                <div style={{ marginTop: "0.5rem", backgroundColor: "rgba(15, 23, 42, 0.8)", padding: "0.6rem", borderRadius: "0.5rem", overflow: "auto", border: "1px solid #334155" }}>
+                  <div style={{ fontSize: "0.75rem", color: "#60a5fa", marginBottom: "0.4rem", fontWeight: "bold" }}>Mermaid 架构图</div>
                   {mermaidSvg ? (
                     <div style={{ display: "flex", justifyContent: "center" }} dangerouslySetInnerHTML={{ __html: mermaidSvg }} />
                   ) : (
@@ -1462,23 +1487,23 @@ export default function Home() {
                 </div>
               )}
               {frameworkTikz && (
-                <div style={{ marginTop: "0.5rem", backgroundColor: "#0f172a", padding: "0.5rem", borderRadius: "0.5rem", border: "1px solid #334155" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                    <span style={{ fontSize: "0.75rem", color: "#60a5fa" }}>TikZ 架构图（LaTeX）</span>
+                <div style={{ marginTop: "0.5rem", backgroundColor: "rgba(15, 23, 42, 0.8)", padding: "0.6rem", borderRadius: "0.5rem", border: "1px solid #334155" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                    <span style={{ fontSize: "0.75rem", color: "#60a5fa", fontWeight: "bold" }}>TikZ 架构图（LaTeX）</span>
                     <button
                       onClick={() => { navigator.clipboard.writeText(frameworkTikz); alert("已复制 TikZ 脚本"); }}
-                      style={{ fontSize: "0.65rem", padding: "1px 6px", backgroundColor: "#2563eb", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+                      style={{ fontSize: "0.65rem", padding: "2px 8px", backgroundColor: "#3b82f6", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
                     >复制</button>
                   </div>
-                  <pre style={{ fontSize: "0.65rem", color: "#cbd5e1", whiteSpace: "pre-wrap", maxHeight: "150px", overflow: "auto" }}>
+                  <pre style={{ fontSize: "0.65rem", color: "#cbd5e1", whiteSpace: "pre-wrap", maxHeight: "150px", overflow: "auto", backgroundColor: "rgba(2, 6, 23, 0.6)", padding: "0.4rem", borderRadius: "0.4rem" }}>
                     {frameworkTikz}
                   </pre>
                 </div>
               )}
               {frameworkRefs.length > 0 && (
-                <div style={{ marginTop: "0.5rem", backgroundColor: "#0f172a", padding: "0.5rem", borderRadius: "0.5rem", fontSize: "0.75rem", color: "#d1d5db", border: "1px solid #334155" }}>
-                  <div style={{ color: "#60a5fa", marginBottom: "0.25rem" }}>References（仅来自本地库）</div>
-                  {frameworkRefs.map((r, i) => <div key={i}>[{i + 1}] {r}</div>)}
+                <div style={{ marginTop: "0.5rem", backgroundColor: "rgba(15, 23, 42, 0.8)", padding: "0.6rem", borderRadius: "0.5rem", fontSize: "0.75rem", color: "#d1d5db", border: "1px solid #334155" }}>
+                  <div style={{ color: "#60a5fa", marginBottom: "0.4rem", fontWeight: "bold" }}>References（仅来自本地库）</div>
+                  {frameworkRefs.map((r, i) => <div key={i} style={{ marginBottom: "0.2rem" }}>[{i + 1}] {r}</div>)}
                 </div>
               )}
               {paperFramework && (
@@ -1492,7 +1517,7 @@ export default function Home() {
 
         <div style={styles.card}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #334155", paddingBottom: "0.5rem", marginBottom: "0.5rem", gap: "0.4rem", flexWrap: "wrap" }}>
-            <h3 style={{ margin: 0, color: "#60a5fa" }}>📄 英文原文</h3>
+            <h3 style={{ margin: 0, color: "#60a5fa", display: "flex", alignItems: "center", gap: "0.5rem" }}>📄 英文原文</h3>
             <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
               {tocList.length > 0 && (
                 <select
@@ -1503,7 +1528,7 @@ export default function Home() {
                     if (target) (target as HTMLElement).scrollIntoView({ behavior: "smooth", block: "center" });
                   }}
                   defaultValue=""
-                  style={{ ...styles.inputBox, fontSize: "0.7rem", padding: "0.2rem 0.4rem", maxWidth: "160px" }}
+                  style={{ ...styles.inputBox, fontSize: "0.75rem", padding: "0.2rem 0.4rem", maxWidth: "160px" }}
                 >
                   <option value="">📑 跳转章节...</option>
                   {tocList.map((t, i) => (
@@ -1514,7 +1539,7 @@ export default function Home() {
               <button
                 onClick={handleLoadEnglish}
                 disabled={isLoadingEn || !hasRawText}
-                style={{ ...styles.btnBlue, fontSize: "0.75rem", padding: "0.25rem 0.5rem", opacity: (isLoadingEn || !hasRawText) ? 0.5 : 1 }}
+                style={{ ...styles.btnBlue, fontSize: "0.75rem", padding: "0.3rem 0.6rem", opacity: (isLoadingEn || !hasRawText) ? 0.5 : 1 }}
               >
                 {isLoadingEn ? "加载中..." : "显示原文"}
               </button>
@@ -1534,7 +1559,7 @@ export default function Home() {
             <button
               onClick={handleFullTranslate}
               disabled={isTranslating || !hasRawText}
-              style={{ ...styles.btnBlue, fontSize: "0.75rem", padding: "0.25rem 0.5rem", opacity: (isTranslating || !hasRawText) ? 0.5 : 1 }}
+              style={{ ...styles.btnBlue, fontSize: "0.75rem", padding: "0.3rem 0.6rem", opacity: (isTranslating || !hasRawText) ? 0.5 : 1 }}
             >
               {isTranslating ? "翻译中..." : "一键翻译"}
             </button>
@@ -1551,15 +1576,15 @@ export default function Home() {
         <div style={styles.popup} onMouseDown={(e) => e.stopPropagation()}>
           <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid #475569", paddingBottom: "0.5rem", flexWrap: "wrap" }}>
             <button onClick={() => handleTextAction("translate")} style={{ ...styles.btnBlue, flex: 1, fontSize: "0.75rem", minWidth: "80px" }}>划词翻译</button>
-            <button onClick={() => handleTextAction("rewrite")} style={{ ...styles.btnBlue, flex: 1, fontSize: "0.75rem", minWidth: "80px", backgroundColor: "#9333ea" }}>学术重写</button>
-            <button onClick={() => handleTextAction("academic_en")} style={{ ...styles.btnBlue, flex: 1, fontSize: "0.75rem", minWidth: "80px", backgroundColor: "#f59e0b" }}>中译英</button>
-            <button onClick={() => setPopupPos(prev => ({ ...prev, visible: false }))} style={{ ...styles.btnBlue, backgroundColor: "#dc2626", padding: "0.2rem 0.5rem" }}>X</button>
+            <button onClick={() => handleTextAction("rewrite")} style={{ ...styles.btnBlue, flex: 1, fontSize: "0.75rem", minWidth: "80px", backgroundColor: "#8b5cf6", boxShadow: "0 2px 8px rgba(139, 92, 246, 0.4)" }}>学术重写</button>
+            <button onClick={() => handleTextAction("academic_en")} style={{ ...styles.btnBlue, flex: 1, fontSize: "0.75rem", minWidth: "80px", backgroundColor: "#f59e0b", boxShadow: "0 2px 8px rgba(245, 158, 11, 0.4)" }}>中译英</button>
+            <button onClick={() => setPopupPos(prev => ({ ...prev, visible: false }))} style={{ ...styles.btnBlue, backgroundColor: "#ef4444", padding: "0.2rem 0.5rem", boxShadow: "0 2px 8px rgba(239, 68, 68, 0.4)" }}>X</button>
           </div>
-          <div style={{ fontSize: "0.8rem", color: "#94a3b8", fontStyle: "italic", maxHeight: "50px", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <div style={{ fontSize: "0.85rem", color: "#94a3b8", fontStyle: "italic", maxHeight: "50px", overflow: "hidden", textOverflow: "ellipsis", marginTop: "0.2rem" }}>
             "{selectedText.slice(0, UI.SELECTION_PREVIEW_LEN)}{selectedText.length > UI.SELECTION_PREVIEW_LEN ? "..." : ""}"
           </div>
           {(popupResult || popupLoading) && (
-            <div style={{ marginTop: "0.2rem", fontSize: "0.85rem", color: "#d1d5db", maxHeight: "150px", overflowY: "auto", borderTop: "1px solid #475569", paddingTop: "0.5rem" }}>
+            <div style={{ marginTop: "0.4rem", fontSize: "0.9rem", color: "#d1d5db", maxHeight: "200px", overflowY: "auto", borderTop: "1px solid #475569", paddingTop: "0.6rem", lineHeight: 1.6 }}>
               {popupLoading ? "正在处理..." : popupResult}
             </div>
           )}

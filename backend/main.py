@@ -1,4 +1,7 @@
 import os
+# 禁用 Chroma 遥测，防止在 Render 512MB 内存下阻塞
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
+
 import re
 import json
 import base64
@@ -636,7 +639,11 @@ async def chat_endpoint(req: ChatRequest):
             except Exception as e:
                 yield f"data: [Error] 网络失败: {str(e)}\n\n"
 
-        return StreamingResponse(generate(), media_type="text/event-stream")
+        return StreamingResponse(
+            generate(), 
+            media_type="text/event-stream",
+            headers={"X-Accel-Buffering": "no", "Cache-Control": "no-cache"}
+        )
     except Exception as e:
         return {"error": str(e)}
 
