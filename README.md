@@ -14,7 +14,9 @@ PaperPilot 是一款面向科研人员打造的全栈式智能科研助手 Agent
 
 > ⚠️ **公网体验建议（重要）**：线上演示服务器为 2 核 2G 轻量配置。为保障服务稳定，请优先使用 `1706.03762v7.pdf`（15 页标准论文）体验 RAG 问答、图谱生成与论文框架。541 页长文档解析与扫描件 OCR 能力已在本地完成极限压测（详见下方报告），线上环境触发了优雅降级。完整能力可通过本地部署复现。
 
-![PaperPilot 系统主界面](docs/images/main_ui.png)
+![PaperPilot 系统主界面](docs/images/main_ui_1.png)
+![PaperPilot 图谱与综述](docs/images/main_ui_2.png)
+![PaperPilot 功能栏](docs/images/main_ui_3.png)
 
 ## ✨ 核心特性与赛项对应
 
